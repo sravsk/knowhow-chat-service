@@ -1,15 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import Chat from './components/Chat.jsx';
 
-class App extends React.Component {
-	constructor(props){
-		super(props)
-	}
 
-	render(){
-		return(
-			<div>CHAT SERVICE</div>
-			)
-	}
-}
-
-export default App;
+ReactDOM.render(<Chat />, document.getElementById('app'));
