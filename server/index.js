@@ -8,7 +8,6 @@ var port = process.env.PORT || 5000;
 
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
-
 app.listen(5000, function(){
   console.log('listening on PORT:5000');
 });
