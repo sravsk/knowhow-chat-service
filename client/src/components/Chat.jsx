@@ -9,10 +9,7 @@ class Chat extends React.Component{
 		return(
 			<div>
 				<ul id="messages"></ul>
-					<form action="">
-						<input id="m" autocomplete="off"/>
-						<button>Chat</button>
-					</form>
+						<input id="m" autocomplete="off" placeholder="write a message"/>
 			</div>
 			)
 	}
