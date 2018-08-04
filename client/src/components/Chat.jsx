@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import socketIOClient from 'socket.io-client';
+import Messages from './Messages.jsx';
 
 const Wrapper = styled.div`
 	box-shadow: 0 5px 40px rgba(0,0,0,.16)!important;
@@ -28,13 +30,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const Section = styled.div`
-	border : 1px solid #777;
-	border-radius : 5px;
-	min-height: 20em!important;
-	margin: 1em;
-	flex: 1;
-`;
 
 const Header = styled.div`
 	padding: 0.4em;
@@ -65,7 +60,7 @@ const Input = styled.input`
   padding-right: 100px;
   padding-left: 29px;
   height: 100%;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Monospaced Number", "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.33;
@@ -77,15 +72,69 @@ const Input = styled.input`
 
 class Chat extends React.Component{
 	constructor(props){
-		super()
+		super(props);
+		this.socket = null;
+		this.state = {
+			users : [],
+			messages : [],
+			message : ''
+		}
+	}
+
+	componentDidMount(){
+		this.initializeChat();
+	}
+
+	initializeChat(){
+		//expose a standalone build of socket io client by socket.io server 
+		this.socket = socketIOClient('ws://localhost:5000');
+		this.socket.on('message', (message) => {
+			this.setState({
+				messages : this.state.messages.concat([message])
+			})
+		})
+
+	}
+
+	onChange(e) {
+		this.setState({
+			message : e.target.value
+		})
+	}
+
+	onKeyUp(e) {
+		if(e.key === 'Enter') {
+			if(this.state.message.length){
+				this.sendMessage({
+					type : 'message',
+					text : this.state.message
+				})
+				e.target.value = '';
+			} else {
+				alert('Please enter a message');
+			}
+		}
+	}
+
+	sendMessage(message, e){
+		this.setState({
+			messages : this.state.messages.concat({message : message })
+		})
+		this.socket.emit('message', {
+			message : message
+		})
 	}
 
 	render(){
 		return(
 			<Wrapper>
 					<Header>Chat with us!</Header>
-					<Section></Section>
-					<Input autocomplete="off" placeholder="write a message"/>
+					<Messages messages={this.state.messages} sendMessage={this.sendMessage.bind(this)}></Messages>
+					<Input 
+						autocomplete="off" 
+						placeholder="write a message" 
+						onChange={this.onChange.bind(this)}
+						onKeyUp={this.onKeyUp.bind(this)}/>
 			</Wrapper>
 			)
 	}
