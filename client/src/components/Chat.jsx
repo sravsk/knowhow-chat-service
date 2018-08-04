@@ -56,7 +56,7 @@ const Header = styled.div`
   font-size: 30px;
 `;
 
-const Textarea = styled.textarea`
+const Input = styled.input`
   resize: none;
   border-radius: 3px;
   border: none;
@@ -85,7 +85,7 @@ class Chat extends React.Component{
 			<Wrapper>
 					<Header>Chat with us!</Header>
 					<Section></Section>
-					<Textarea autocomplete="off" placeholder="write a message"/>
+					<Input autocomplete="off" placeholder="write a message"/>
 			</Wrapper>
 			)
 	}
