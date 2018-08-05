@@ -11,16 +11,24 @@ const port = process.env.PORT || 5000;
 
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
-io.on('connection', (client) => {
+io.on('connection', (socket) => {
   //start emitting events to the client 
-  console.log('a user connected', client.id);
+  console.log('a user connected', socket.id);
 
-  client.on('disconnect', () => {
-    console.log('user disconnected', client.id);
+  socket.on('message', (data) => {
+  	console.log(data);
+  	socket.broadcast.emit('message', {
+  		message : data.message
+  	})
+
+  })
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected', socket.id);
   });
 
-  client.on('error', (err) => {
-  	console.log("error received from client : ", client.id)
+  socket.on('error', (err) => {
+  	console.log("error received from client : ", socket.id)
   });
 
 });
