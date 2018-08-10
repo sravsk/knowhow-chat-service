@@ -69,6 +69,23 @@ const Input = styled.input`
 	width: 64%;
 `;
 
+const Username = styled.div`
+	width : 100%;
+  height: 100%;
+	font-family: "Monospaced Number", "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.33;
+	display: block;
+	border-radius: 3px;
+	border-style: solid none none;
+	border-image: initial;
+	padding: 18px 100px 18px 29px;
+	border-top: 1px solid rgb(230, 230, 230);
+	width: 64%;
+	color : #777;
+`;
+
 
 class Chat extends React.Component{
 	constructor(props){
@@ -77,7 +94,8 @@ class Chat extends React.Component{
 		this.state = {
 			users : [],
 			messages : [],
-			message : ''
+			message : '',
+			username : ''
 		}
 	}
 
@@ -93,7 +111,6 @@ class Chat extends React.Component{
 				messages : this.state.messages.concat([message])
 			})
 		})
-
 	}
 
 	onChange(e) {
@@ -103,6 +120,7 @@ class Chat extends React.Component{
 	}
 
 	onKeyUp(e) {
+		var typing = true;
 		if(e.key === 'Enter') {
 			if(this.state.message.length){
 				this.sendMessage({
@@ -110,22 +128,41 @@ class Chat extends React.Component{
 					text : this.state.message
 				})
 				e.target.value = '';
+				this.setState({
+					username : ''
+				})
 			} else {
 				alert('Please enter a message');
 			}
+		} else {
+			typing = true;
+			this.socket.emit('typing', typing)
+			this.setState({
+				username : 'Anonnymous'
+			})
 		}
 	}
 
 	sendMessage(message, e){
 		this.setState({
-			messages : this.state.messages.concat({message : message })
+			messages : this.state.messages.concat({
+				message : message
+				})
 		})
 		this.socket.emit('message', {
-			message : message
+			message : message,
+			username : this.state.username
 		})
 	}
 
 	render(){
+		const isTyping = this.state.username;
+		let user;
+		if(isTyping) {
+			user = isTyping + ' is typing...'
+		}  else {
+			user = ''
+		}
 		return(
 			<Wrapper>
 					<Header>Chat with us!</Header>
@@ -135,6 +172,7 @@ class Chat extends React.Component{
 						placeholder="write a message" 
 						onChange={this.onChange.bind(this)}
 						onKeyUp={this.onKeyUp.bind(this)}/>
+					<Username>{user}</Username>
 			</Wrapper>
 			)
 	}

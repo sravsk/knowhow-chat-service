@@ -1,10 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
+import avatar from '../../../assets/nan.jpg';
 
 
 const Well = styled.div`
-	min-height: 20px;
-  padding: 19px;
+	min-height: 2.2em;
+  padding : 1em;
+  font-size : 0.9em;
   margin-bottom: 20px;
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
@@ -14,9 +16,31 @@ const Well = styled.div`
   font-family: "Monospaced Number", "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   `;
 
+  const Avatar = styled.img`
+    background-image: url(${avatar});
+    display: block;
+    margin: 0 auto;
+    width: 3em;
+    height: 3em;
+    border-radius: .25rem;
+  `;
+
+  const Wrapper = styled.div`
+    float: left;
+    padding : 0.5em 0.5em 0.5em;
+    padding-right: 1em;
+  `;
+
 const Message = (props) => {
 	return(
-		<Well>{props.message.message.text}</Well>
+    <div>
+    <Wrapper>
+       <Avatar/>
+      </Wrapper>
+    <Well>
+      {props.message.message.text}
+    </Well>
+    </div>
 		)
 }
 

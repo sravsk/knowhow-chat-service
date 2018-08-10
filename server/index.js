@@ -20,7 +20,14 @@ io.on('connection', (socket) => {
   	socket.broadcast.emit('message', {
   		message : data.message
   	})
+  })
 
+  socket.username  = 'Anonnymous';
+
+  socket.on('typing', (data) => {
+  	socket.broadcast.emit('typing', {
+  		username : socket.username
+  	})
   })
 
   socket.on('disconnect', () => {

@@ -10,7 +10,9 @@
   "author": "ASTA",
   "license": "ISC",
   "dependencies": {
+    "babel-minify-webpack-plugin": "^0.3.1",
     "express": "^4.16.3",
+    "file-loader": "^1.1.11",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "socket.io": "^2.1.1",
