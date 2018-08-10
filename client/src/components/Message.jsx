@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import avatar from '../../../assets/nan.jpg';
+//import avatar from 'https://s3-us-west-1.amazonaws.com/knowhow-s3/assets/nan.jpg';
 
 
 const Well = styled.div`
@@ -17,7 +17,7 @@ const Well = styled.div`
   `;
 
   const Avatar = styled.img`
-    background-image: url(${avatar});
+    background-image: url(${'https://s3-us-west-1.amazonaws.com/knowhow-s3/assets/nan.jpg'});
     display: block;
     margin: 0 auto;
     width: 3em;
