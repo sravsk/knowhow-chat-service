@@ -66,7 +66,6 @@ const Input = styled.input`
   line-height: 1.33;
   border-top: 1px solid #e6e6e6;
   display: block;
-	width: 64%;
 `;
 
 const Username = styled.div`
@@ -82,7 +81,6 @@ const Username = styled.div`
 	border-image: initial;
 	padding: 18px 100px 18px 29px;
 	border-top: 1px solid rgb(230, 230, 230);
-	width: 64%;
 	color : #777;
 `;
 
