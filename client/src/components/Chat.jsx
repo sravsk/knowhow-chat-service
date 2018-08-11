@@ -3,60 +3,6 @@ import styled from 'styled-components';
 import socketIOClient from 'socket.io-client';
 import Messages from './Messages.jsx';
 
-const Wrapper = styled.div`
-	box-shadow: 0 5px 40px rgba(0,0,0,.16)!important;
-  border-radius: 8px!important;
-  background: #fff;
-  position: fixed !important;
-  bottom: 19px !important;
-  right: 20px !important;
-  z-index: 9999999 !important;
-  width: 376px!important;
-  height: auto !important;
-  max-height: 410px;
-  background: #fff;
-  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-  font-size: 14px;
-  line-height: 1.4285em;
-  margin-right: 0px;
-  min-height: 400px;
-  overflow-y: scroll;
-
-	::-webkit-scrollbar {
-		-webkit-appearance: none;
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    border-radius: 5px;
-    background: rgba(0,0,0,.25);
-    -webkit-transition: color .2s ease;
-    transition: color .2s ease;
-  }
-`;
-
-
-const Header = styled.div`
-	padding: 0.4em;
-  line-height: 30px !important;
-  background: #159adc !important;
-  color: #FFF !important;
-  display: flex !important;
-  align-items: stretch !important;
-  overflow-x: hidden;
-  overflow-y: auto;
-  word-wrap: break-word;
-  white-space: pre-line;
-  font-family: "Open Sans", sans-serif;
-  font: normal normal 100% "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 130%;
-  font-style: normal;
-  letter-spacing: normal;
-  font-weight: 400;
-  font-size: 30px;
-`;
-
 const Input = styled.input`
   resize: none;
   border-radius: 3px;
@@ -98,7 +44,10 @@ class Chat extends React.Component{
 			users : [],
 			messages : [],
 			message : '',
-			username : ''
+			username : '',
+			open : false,
+			showDockedWidget : true,
+			knowhowChat : 'knowhow-chat-wrapper-show'
 		}
 	}
 
@@ -158,6 +107,26 @@ class Chat extends React.Component{
 		})
 	}
 
+	handleToggleOpen() {
+		this.setState((prev) => {
+			let { showDockedWidget } = prev;
+			if (!prev.open) {
+				showDockedWidget = false;
+			}
+			return {
+				showDockedWidget,
+				open: !prev.open
+			}
+		})
+	}
+
+	handleBackButton(){
+		console.log("working")
+		this.setState ({
+			knowhowChat : 'knowhow-chat-wrapper'
+		})
+	}
+
 	render(){
 		const isTyping = this.state.username;
 		let user;
@@ -167,8 +136,7 @@ class Chat extends React.Component{
 			user = ''
 		}
 		return(
-			<Wrapper>
-					<Header>Chat with us!</Header>
+					<div>
 					<Messages messages={this.state.messages} sendMessage={this.sendMessage.bind(this)}></Messages>
 					<Input 
 						autocomplete="off" 
@@ -176,7 +144,8 @@ class Chat extends React.Component{
 						onChange={this.onChange.bind(this)}
 						onKeyUp={this.onKeyUp.bind(this)}/>
 					<Username>{user}</Username>
-			</Wrapper>
+					</div>
+		
 			)
 	}
 }
