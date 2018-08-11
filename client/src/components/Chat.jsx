@@ -5,16 +5,22 @@ import Messages from './Messages.jsx';
 
 const Wrapper = styled.div`
 	box-shadow: 0 5px 40px rgba(0,0,0,.16)!important;
-	border-radius: 8px!important;
-	overflow-y: scroll;
-	background: #fff;
-	position: fixed !important;
-	bottom: 20px !important;
-	right: 10px !important;
-	z-index: 9999 !important;
-	width: 376px!important;
-	height: auto !important;
-	min-height: 400px;
+  border-radius: 8px!important;
+  background: #fff;
+  position: fixed !important;
+  bottom: 19px !important;
+  right: 20px !important;
+  z-index: 9999999 !important;
+  width: 376px!important;
+  height: auto !important;
+  max-height: 410px;
+  background: #fff;
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+  font-size: 14px;
+  line-height: 1.4285em;
+  margin-right: 0px;
+  min-height: 400px;
+  overflow-y: scroll;
 
 	::-webkit-scrollbar {
 		-webkit-appearance: none;
@@ -54,8 +60,6 @@ const Header = styled.div`
 const Input = styled.input`
   resize: none;
   border-radius: 3px;
-  border: none;
-  resize: none;
   padding: 18px;
   padding-right: 100px;
   padding-left: 29px;
@@ -66,6 +70,7 @@ const Input = styled.input`
   line-height: 1.33;
   border-top: 1px solid #e6e6e6;
   display: block;
+  width : 100%;
 `;
 
 const Username = styled.div`

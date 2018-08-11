@@ -4,7 +4,7 @@ import Message from './Message.jsx';
 
 const Section = styled.div`
 	border-radius : 5px;
-	min-height: 20em!important;
+	min-height: 15em!important;
 	margin: 1em;
 	flex: 1;
 `;
