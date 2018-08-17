@@ -7,8 +7,8 @@ class EmbeddableChatService extends React.Component {
   static el;
 
   //es7 static method 
-  static mount() {
-    const component = <Chat/>;
+  static mount(customerData) {
+    const component = <Chat customerData={customerData}/>;
 
     function doRender() {
       if (EmbeddableChatService.el) {

@@ -44,10 +44,11 @@ class Chat extends React.Component{
 			users : [],
 			messages : [],
 			message : '',
-			username : '',
+			user : '',
 			open : false,
 			showDockedWidget : true,
-			knowhowChat : 'knowhow-chat-wrapper-show'
+			knowhowChat : 'knowhow-chat-wrapper-show',
+			uid : localStorage.getItem('uid') ? localStorage.getItem('uid') : this.generateUID()
 		}
 	}
 
@@ -55,9 +56,31 @@ class Chat extends React.Component{
 		this.initializeChat();
 	}
 
+	// generate a random string, use it to set uid key on local storage
+	// can identify users accessing chat app from different browser tabs
+	generateUID(){
+		let text = '';
+		let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		for (let i = 0; i < 15; i++){
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
+		localStorage.setItem('uid', text);
+		return text;
+	}
+
 	initializeChat(){
+		localStorage.setItem('user', this.props.customerData.name);
 		//expose a standalone build of socket io client by socket.io server 
-		this.socket = socketIOClient('ws://localhost:5000');
+		this.socket = socketIOClient('ws://localhost:5000', {
+			query : 'user='+this.props.customerData.name+'&uid='+this.state.uid
+		});
+
+		this.socket.on('updateUsersList', (users) => {
+			console.log("users" , users);
+			this.setState({
+				users : users
+			})
+		})
 		this.socket.on('message', (message) => {
 			this.setState({
 				messages : this.state.messages.concat([message])
@@ -81,7 +104,7 @@ class Chat extends React.Component{
 				})
 				e.target.value = '';
 				this.setState({
-					username : ''
+					user : ''
 				})
 			} else {
 				alert('Please enter a message');
@@ -90,7 +113,7 @@ class Chat extends React.Component{
 			typing = true;
 			this.socket.emit('typing', typing)
 			this.setState({
-				username : 'Anonnymous'
+				user : this.props.customerData.name
 			})
 		}
 	}
@@ -98,37 +121,21 @@ class Chat extends React.Component{
 	sendMessage(message, e){
 		this.setState({
 			messages : this.state.messages.concat({
+				user : this.props.customerData.name,
+				uid : localStorage.getItem('uid'),
 				message : message
 				})
 		})
 		this.socket.emit('message', {
+		  user : this.props.customerData.name,
+		  uid : localStorage.getItem('uid'),
 			message : message,
-			username : this.state.username
-		})
-	}
-
-	handleToggleOpen() {
-		this.setState((prev) => {
-			let { showDockedWidget } = prev;
-			if (!prev.open) {
-				showDockedWidget = false;
-			}
-			return {
-				showDockedWidget,
-				open: !prev.open
-			}
-		})
-	}
-
-	handleBackButton(){
-		console.log("working")
-		this.setState ({
-			knowhowChat : 'knowhow-chat-wrapper'
 		})
 	}
 
 	render(){
-		const isTyping = this.state.username;
+		//console.log(this.props.customerData)
+		const isTyping = this.state.user;
 		let user;
 		if(isTyping) {
 			user = isTyping + ' is typing...'
