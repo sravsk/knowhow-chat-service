@@ -32,11 +32,33 @@ const Well = styled.div`
     padding-right: 1em;
   `;
 
+  const User = styled.div`
+    font-size: 1em;
+    color: rgba(0,0,0,.87);
+    font-weight: 700;
+  `;
+
 const Message = (props) => {
+
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+
+
+  var d = new Date();
+
 	return(
     <Wrapper>
        <Avatar/>
     <Well>
+      <User>{props.message.user} </User>
       {props.message.message.text}
     </Well>
     </Wrapper>

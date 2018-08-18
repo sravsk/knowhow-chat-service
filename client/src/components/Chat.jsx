@@ -76,7 +76,7 @@ class Chat extends React.Component{
 		});
 
 		this.socket.on('updateUsersList', (users) => {
-			console.log("users" , users);
+			//console.log("users" , users);
 			this.setState({
 				users : users
 			})
