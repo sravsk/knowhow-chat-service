@@ -3,59 +3,9 @@ import styled from 'styled-components';
 import socketIOClient from 'socket.io-client';
 import Messages from './Messages.jsx';
 
-const Wrapper = styled.div`
-	box-shadow: 0 5px 40px rgba(0,0,0,.16)!important;
-	border-radius: 8px!important;
-	overflow-y: scroll;
-	background: #fff;
-	position: fixed !important;
-	bottom: 20px !important;
-	right: 10px !important;
-	z-index: 9999 !important;
-	width: 376px!important;
-	height: auto !important;
-	min-height: 400px;
-
-	::-webkit-scrollbar {
-		-webkit-appearance: none;
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    border-radius: 5px;
-    background: rgba(0,0,0,.25);
-    -webkit-transition: color .2s ease;
-    transition: color .2s ease;
-  }
-`;
-
-
-const Header = styled.div`
-	padding: 0.4em;
-  line-height: 30px !important;
-  background: #159adc !important;
-  color: #FFF !important;
-  display: flex !important;
-  align-items: stretch !important;
-  overflow-x: hidden;
-  overflow-y: auto;
-  word-wrap: break-word;
-  white-space: pre-line;
-  font-family: "Open Sans", sans-serif;
-  font: normal normal 100% "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 130%;
-  font-style: normal;
-  letter-spacing: normal;
-  font-weight: 400;
-  font-size: 30px;
-`;
-
 const Input = styled.input`
   resize: none;
   border-radius: 3px;
-  border: none;
-  resize: none;
   padding: 18px;
   padding-right: 100px;
   padding-left: 29px;
@@ -66,7 +16,7 @@ const Input = styled.input`
   line-height: 1.33;
   border-top: 1px solid #e6e6e6;
   display: block;
-	width: 64%;
+  width : 100%;
 `;
 
 const Username = styled.div`
@@ -82,7 +32,6 @@ const Username = styled.div`
 	border-image: initial;
 	padding: 18px 100px 18px 29px;
 	border-top: 1px solid rgb(230, 230, 230);
-	width: 64%;
 	color : #777;
 `;
 
@@ -95,7 +44,11 @@ class Chat extends React.Component{
 			users : [],
 			messages : [],
 			message : '',
-			username : ''
+			user : '',
+			open : false,
+			showDockedWidget : true,
+			knowhowChat : 'knowhow-chat-wrapper-show',
+			uid : localStorage.getItem('uid') ? localStorage.getItem('uid') : this.generateUID()
 		}
 	}
 
@@ -103,9 +56,31 @@ class Chat extends React.Component{
 		this.initializeChat();
 	}
 
+	// generate a random string, use it to set uid key on local storage
+	// can identify users accessing chat app from different browser tabs
+	generateUID(){
+		let text = '';
+		let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		for (let i = 0; i < 15; i++){
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
+		localStorage.setItem('uid', text);
+		return text;
+	}
+
 	initializeChat(){
+		localStorage.setItem('user', this.props.customerData.name);
 		//expose a standalone build of socket io client by socket.io server 
-		this.socket = socketIOClient('ws://localhost:5000');
+		this.socket = socketIOClient('ws://localhost:5000', {
+			query : 'user='+this.props.customerData.name+'&uid='+this.state.uid
+		});
+
+		this.socket.on('updateUsersList', (users) => {
+			console.log("users" , users);
+			this.setState({
+				users : users
+			})
+		})
 		this.socket.on('message', (message) => {
 			this.setState({
 				messages : this.state.messages.concat([message])
@@ -129,7 +104,7 @@ class Chat extends React.Component{
 				})
 				e.target.value = '';
 				this.setState({
-					username : ''
+					user : ''
 				})
 			} else {
 				alert('Please enter a message');
@@ -138,7 +113,7 @@ class Chat extends React.Component{
 			typing = true;
 			this.socket.emit('typing', typing)
 			this.setState({
-				username : 'Anonnymous'
+				user : this.props.customerData.name
 			})
 		}
 	}
@@ -146,17 +121,21 @@ class Chat extends React.Component{
 	sendMessage(message, e){
 		this.setState({
 			messages : this.state.messages.concat({
+				user : this.props.customerData.name,
+				uid : localStorage.getItem('uid'),
 				message : message
 				})
 		})
 		this.socket.emit('message', {
+		  user : this.props.customerData.name,
+		  uid : localStorage.getItem('uid'),
 			message : message,
-			username : this.state.username
 		})
 	}
 
 	render(){
-		const isTyping = this.state.username;
+		//console.log(this.props.customerData)
+		const isTyping = this.state.user;
 		let user;
 		if(isTyping) {
 			user = isTyping + ' is typing...'
@@ -164,8 +143,7 @@ class Chat extends React.Component{
 			user = ''
 		}
 		return(
-			<Wrapper>
-					<Header>Chat with us!</Header>
+					<div>
 					<Messages messages={this.state.messages} sendMessage={this.sendMessage.bind(this)}></Messages>
 					<Input 
 						autocomplete="off" 
@@ -173,7 +151,8 @@ class Chat extends React.Component{
 						onChange={this.onChange.bind(this)}
 						onKeyUp={this.onKeyUp.bind(this)}/>
 					<Username>{user}</Username>
-			</Wrapper>
+					</div>
+		
 			)
 	}
 }

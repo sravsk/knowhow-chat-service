@@ -7,24 +7,15 @@ class EmbeddableChatService extends React.Component {
   static el;
 
   //es7 static method 
-  static mount() {
-    const component = <Chat/>;
+  static mount(customerData) {
+    const component = <Chat customerData={customerData}/>;
 
     function doRender() {
-      console.log("is this dorender() working?")
       if (EmbeddableChatService.el) {
         throw new Error('EmbeddableChatService is already mounted, unmount first');
       }
-
-      //using hashid module in browser by appending hashid.min.js to the knowhow-widget div element
       const el = document.createElement('div');
       el.setAttribute('class', 'knowhow-chat-service');
-
-     // const widgetEl = document.getElementsByClassName('knowhow-widget');
-      //console.log('widgetEl', widgetEl)
-      //widgetEl.append(el)
-      //document.body.appendChild(el);
-
       document.getElementsByClassName('knowhow-chat-wrapper')[0].appendChild(el);
       ReactDOM.render(
         component,
