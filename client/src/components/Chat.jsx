@@ -70,21 +70,27 @@ class Chat extends React.Component{
 
 	initializeChat(){
 		localStorage.setItem('user', this.props.customerData.name);
+		localStorage.setItem('app_id', this.props.customerData.app_id)
 		//expose a standalone build of socket io client by socket.io server 
 		this.socket = socketIOClient('ws://localhost:5000', {
-			query : 'user='+this.props.customerData.name+'&uid='+this.state.uid
+			query : 'user='+this.props.customerData.name+'&uid='+this.state.uid+'&appid='+this.props.customerData.app_id
 		});
-
+		var substring = "appid="
+		var params = this.socket.query.split(substring).pop();
+		this.socket.emit('join', params, (err) => {
+			if(err) {
+				alert(err)
+			}
+		});
 		this.socket.on('updateUsersList', (users) => {
-			//console.log("users" , users);
 			this.setState({
 				users : users
 			})
 		})
 		this.socket.on('message', (message) => {
-			this.setState({
-				messages : this.state.messages.concat([message])
-			})
+				this.setState({
+					messages : this.state.messages.concat([message])
+				})
 		})
 	}
 
@@ -119,22 +125,15 @@ class Chat extends React.Component{
 	}
 
 	sendMessage(message, e){
-		this.setState({
-			messages : this.state.messages.concat({
-				user : this.props.customerData.name,
-				uid : localStorage.getItem('uid'),
-				message : message
-				})
-		})
 		this.socket.emit('message', {
 		  user : this.props.customerData.name,
 		  uid : localStorage.getItem('uid'),
 			message : message,
+			appid : this.props.customerData.app_id
 		})
 	}
 
 	render(){
-		//console.log(this.props.customerData)
 		const isTyping = this.state.user;
 		let user;
 		if(isTyping) {
