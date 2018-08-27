@@ -32,7 +32,8 @@ createUser = (user) => {
         [user.uid] : {
             user : user.user,
             uid : user.uid,
-            sockets : [user.socket_id]
+            sockets : [user.socket_id],
+            appid : user.appid
         }
     }, users);
 };
@@ -46,7 +47,7 @@ removeSocket = (socket_id) => {
         }
     });
     let user = users[uid];
-    if(user.sockets.length > 1){
+    if(user.sockets.length > 0){
         // Remove socket only
         let index = user.sockets.indexOf(socket_id);
         let updated_user = {
@@ -69,30 +70,48 @@ io.on('connection', (socket) => {
   //console.log('a user connected', socket.id);
 
   let query = socket.request._query;
+  
   let user = {
   	user : query.user, 
   	uid : query.uid, 
+    appid : query.appid,
   	socket_id : socket.id 
   }
 
-  if(users[user.uid] !== undefined){
-  	createSocket(user);
-  	socket.emit('updateUsersList', getUsers());
-  } else {
-    createUser(user);
-    io.emit('updateUsersList', getUsers());
-   }
+  var params = user.appid
 
-  socket.on('message', (data) => {
-  	//console.log("data", data);
-  	socket.broadcast.emit('message', {
-  		user : data.user,
-  		message : data.message,
-  		uid : data.uid
-  	})
+  socket.on('join', (params, callback) => {
+    socket.join(params) // appid room
+
+    if(users[user.uid] !== undefined){
+      createSocket(user);
+      socket.emit('updateUsersList', getUsers());
+    } else {
+      createUser(user);
+      io.to(params).emit('updateUsersList', getUsers());
+   }
+   callback();
+
+  });
+
+  
+
+  var appid = user.appid
+  socket.on('message', (data, appid) => {
+   var appid = user.appid
+   socket.join(appid);
+    if(user.appid !== undefined) {
+    	io.to(appid).emit('message', {
+    		user : data.user,
+    		message : data.message,
+    		uid : data.uid,
+        appid : data.appid
+    	})
+    }
   })
 
-  socket.on('typing', (data) => {
+  socket.on('typing', (appid, data) => {
+   // appid = user.appid
   	socket.broadcast.emit('typing', {
   		user : socket.user
   	})
@@ -100,7 +119,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     //console.log('user disconnected', socket.id);
-    removeSocket(socket.id);
+    //removeSocket(socket.id);
     io.emit('updateUsersList', getUsers());
   });
 
